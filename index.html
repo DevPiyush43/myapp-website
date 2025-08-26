@@ -2,170 +2,810 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🌤️ SkyCAst Weather App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⛅ SkyCast - Advanced Weather Intelligence</title>
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #f5f5f5;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(-45deg, #0a0e27, #16213e, #1a2347, #0f1419);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      color: #ffffff;
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 15px 50px;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      padding: 10px 50px;
+      background: rgba(0, 0, 0, 0.98);
+    }
+
+    .logo {
+      font-size: 1.8em;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00d4ff, #ff6b6b, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: logoGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoGlow {
+      from { filter: brightness(1); }
+      to { filter: brightness(1.2); }
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: #00d4ff;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      padding: 0 20px;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #00d4ff, #ff6b6b, #4ecdc4, #45b7d1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: titleFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes titleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      color: #b8c6db;
+      margin-bottom: 40px;
+      max-width: 800px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 18px 35px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      color: white;
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .section {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 700;
+      margin-bottom: 60px;
+      background: linear-gradient(45deg, #00d4ff, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-top: 50px;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #00d4ff);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .feature-icon {
+      font-size: 3em;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .feature-title {
+      font-size: 1.5em;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #00d4ff;
+    }
+
+    .feature-description {
+      color: #b8c6db;
       line-height: 1.6;
     }
-    header {
-      text-align: center;
-      padding: 60px 20px;
-      background: rgba(0, 0, 0, 0.5);
+
+    .tech-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 50px;
     }
-    header h1 {
-      font-size: 2.8em;
-      margin-bottom: 10px;
-      color: #4dd0e1;
-    }
-    header p {
-      font-size: 1.2em;
-      color: #ddd;
-    }
-    .container {
-      width: 90%;
-      max-width: 1100px;
-      margin: auto;
-      padding: 40px 0;
-    }
-    section {
-      background: rgba(255,255,255,0.08);
-      padding: 30px;
-      margin-bottom: 30px;
+
+    .tech-item {
+      background: rgba(0, 212, 255, 0.1);
+      padding: 30px 20px;
       border-radius: 15px;
-      box-shadow: 0px 6px 15px rgba(0,0,0,0.3);
-    }
-    h2 {
-      color: #4dd0e1;
-      margin-bottom: 15px;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    code, pre {
-      background: #1e1e1e;
-      padding: 15px;
-      border-radius: 10px;
-      overflow-x: auto;
-      color: #dcdcdc;
-      font-size: 0.9em;
-    }
-    .button {
-      display: inline-block;
-      padding: 12px 20px;
-      background: #ff9800;
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-    .button:hover {
-      background: #e68900;
-    }
-    footer {
       text-align: center;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.4);
-      margin-top: 30px;
-      font-size: 0.9em;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .tech-item:hover {
+      background: rgba(0, 212, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .roadmap {
+      position: relative;
+    }
+
+    .roadmap::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #ff6b6b, #4ecdc4, #00d4ff);
+      transform: translateX(-50%);
+    }
+
+    .roadmap-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .roadmap-item:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .roadmap-content {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      flex: 0 0 45%;
+      margin: 0 5%;
+    }
+
+    .roadmap-number {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: white;
+      z-index: 10;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 50px;
+    }
+
+    .stat-card {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 212, 255, 0.2);
+    }
+
+    .stat-number {
+      font-size: 3em;
+      font-weight: 800;
+      color: #00d4ff;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .stat-label {
+      color: #b8c6db;
+      font-size: 1.1em;
+    }
+
+    .footer {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 60px 0 30px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      margin-bottom: 30px;
+    }
+
+    .footer-title {
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #00d4ff, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #b8c6db;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: #00d4ff;
+    }
+
+    .copyright {
+      color: #666;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+    }
+
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-element {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-30px) rotate(120deg); }
+      66% { transform: translateY(30px) rotate(240deg); }
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 15px 20px;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .roadmap::before {
+        left: 30px;
+      }
+      
+      .roadmap-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 70px;
+      }
+      
+      .roadmap-number {
+        left: 30px;
+      }
+      
+      .roadmap-content {
+        flex: 1;
+        margin: 0;
+      }
     }
   </style>
 </head>
 <body>
-
-  <!-- HEADER -->
-  <header>
-    <h1>🌤️ SkyCAst Weather App</h1>
-    <p>Where Weather Meets Community</p>
-    <a href="app-release.apk" class="button">📥 Download APK</a>
-  </header>
-
-  <div class="container">
-
-    <!-- Section 1 -->
-    <section>
-      <h2>1️⃣ Proposed Solution & App Overview</h2>
-      <p><strong>SkyCAst</strong> is an advanced Android weather application that combines traditional forecasting with modern interactive features.</p>
-      <ul>
-        <li>👥 Interactive Community Features</li>
-        <li>🎥 Immersive Weather Backgrounds</li>
-        <li>📱 Advanced Offline Capabilities</li>
-        <li>🌬️ Real-time Air Quality Monitoring</li>
-        <li>🚨 Intelligent Weather Alerts</li>
-      </ul>
-    </section>
-
-    <!-- Section 2 -->
-    <section>
-      <h2>2️⃣ Application Flow & Architecture</h2>
-      <pre>
-🚀 APP LAUNCH
-   ├── 🔐 Firebase Authentication
-   ├── 📍 Location Services
-   ├── 🌍 Weather Data Fetching
-   ├── 🎨 UI Presentation
-   ├── 👥 Community Features
-   ├── 🗺️ Interactive Maps
-   └── 🚨 Alert System
-      </pre>
-    </section>
-
-    <!-- Section 3 -->
-    <section>
-      <h2>3️⃣ Technology Stack</h2>
-      <ul>
-        <li>⚡ <b>Java + AndroidX</b> (Core App Development)</li>
-        <li>🔥 <b>Firebase</b> (Auth, Firestore, Messaging, Storage)</li>
-        <li>🌐 <b>OpenWeatherMap API</b> (Weather + AQI Data)</li>
-        <li>🗺️ <b>Google Maps SDK</b> (Radar & Overlays)</li>
-        <li>🎨 <b>Lottie + Material Design 3</b> (Modern UI/UX)</li>
-      </ul>
-    </section>
-
-    <!-- Section 4 -->
-    <section>
-      <h2>4️⃣ Unique Features</h2>
-      <ul>
-        <li>👥 Community-driven weather reporting</li>
-        <li>🎥 Weather-adaptive video backgrounds</li>
-        <li>📱 Offline-first capabilities with smart caching</li>
-        <li>🤖 AI-powered health and comfort alerts</li>
-        <li>🌈 Emotional weather interface</li>
-      </ul>
-    </section>
-
-    <!-- Section 5 -->
-    <section>
-      <h2>5️⃣ Roadmap</h2>
-      <ul>
-        <li>Phase 1: Core Setup & APIs</li>
-        <li>Phase 2: Weather Core Features</li>
-        <li>Phase 3: Advanced Features (Radar, AQI, Offline)</li>
-        <li>Phase 4: Community Platform</li>
-        <li>Phase 5: Launch & Optimization</li>
-      </ul>
-    </section>
-
-    <!-- Section 6 -->
-    <section>
-      <h2>6️⃣ Success Metrics</h2>
-      <ul>
-        <li>📈 100,000+ downloads in Year 1</li>
-        <li>👥 25,000 Monthly Active Users</li>
-        <li>⭐ 4.5+ Play Store Rating</li>
-        <li>💬 1,000+ community posts/month</li>
-      </ul>
-    </section>
-
+  <!-- Animated Stars -->
+  <div class="stars" id="stars"></div>
+  
+  <!-- Floating Elements -->
+  <div class="floating-elements">
+    <div class="floating-element" style="top: 10%; left: 10%; font-size: 2em;">☁️</div>
+    <div class="floating-element" style="top: 20%; right: 10%; font-size: 1.5em; animation-delay: -5s;">🌟</div>
+    <div class="floating-element" style="top: 60%; left: 5%; font-size: 2.5em; animation-delay: -10s;">⛈️</div>
+    <div class="floating-element" style="bottom: 30%; right: 15%; font-size: 1.8em; animation-delay: -15s;">🌙</div>
   </div>
 
-  <footer>
-    <p>🌤️ SkyCAst Weather App | Developed by Piyush Patil © 2025</p>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="logo">⛅ SkyCast</div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#tech">Technology</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <h1 class="hero-title">⛅ SkyCast</h1>
+    <p class="hero-subtitle">
+      Experience the future of weather intelligence with AI-powered forecasting, 
+      community-driven insights, and immersive weather visualization
+    </p>
+    <div class="cta-buttons">
+      <a href="#" class="btn btn-primary">
+        <span>📱</span> Download App
+      </a>
+      <a href="#features" class="btn btn-secondary">
+        <span>🚀</span> Explore Features
+      </a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section" id="features">
+    <div class="container">
+      <h2 class="section-title">🌟 Revolutionary Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🤖</span>
+          <h3 class="feature-title">AI Weather Intelligence</h3>
+          <p class="feature-description">
+            Advanced machine learning algorithms analyze weather patterns, providing hyper-local forecasts 
+            with 95% accuracy and personalized health recommendations based on weather conditions.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">👥</span>
+          <h3 class="feature-title">Community Weather Network</h3>
+          <p class="feature-description">
+            Join thousands of weather enthusiasts sharing real-time conditions, photos, and insights. 
+            Create weather stories and connect with your local weather community.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🎥</span>
+          <h3 class="feature-title">Immersive AR Experience</h3>
+          <p class="feature-description">
+            Dynamic weather backgrounds that adapt to current conditions with augmented reality overlays 
+            showing weather data in your real environment through your camera.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🗺️</span>
+          <h3 class="feature-title">Interactive Weather Maps</h3>
+          <p class="feature-description">
+            High-resolution radar with predictive layers, storm tracking, satellite imagery, 
+            and real-time lightning detection with customizable overlay options.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🔋</span>
+          <h3 class="feature-title">Smart Offline Mode</h3>
+          <p class="feature-description">
+            Advanced caching system that learns your patterns and pre-loads weather data for your 
+            frequent locations, ensuring you're never without weather information.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🌿</span>
+          <h3 class="feature-title">Environmental Health Hub</h3>
+          <p class="feature-description">
+            Real-time air quality monitoring, pollen forecasts, UV index tracking, and personalized 
+            health alerts for conditions like asthma, allergies, and outdoor activity planning.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Stack -->
+  <section class="section" id="tech">
+    <div class="container">
+      <h2 class="section-title">⚡ Advanced Technology Stack</h2>
+      <div class="tech-stack">
+        <div class="tech-item">
+          <h3>🎯 Kotlin & Jetpack Compose</h3>
+          <p>Modern Android development with reactive UI</p>
+        </div>
+        <div class="tech-item">
+          <h3>🔥 Firebase Suite</h3>
+          <p>Authentication, Cloud Firestore, ML Kit, Analytics</p>
+        </div>
+        <div class="tech-item">
+          <h3>🌐 Multi-API Integration</h3>
+          <p>OpenWeather, AccuWeather, Weather Underground</p>
+        </div>
+        <div class="tech-item">
+          <h3>🗺️ Advanced Mapping</h3>
+          <p>Google Maps, Mapbox, custom weather layers</p>
+        </div>
+        <div class="tech-item">
+          <h3>🤖 TensorFlow Lite</h3>
+          <p>On-device AI for weather pattern recognition</p>
+        </div>
+        <div class="tech-item">
+          <h3>☁️ Cloud Functions</h3>
+          <p>Serverless weather data processing and alerts</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section class="section" id="roadmap">
+    <div class="container">
+      <h2 class="section-title">🛣️ Development Roadmap</h2>
+      <div class="roadmap">
+        <div class="roadmap-item">
+          <div class="roadmap-number">1</div>
+          <div class="roadmap-content">
+            <h3>Foundation & Core APIs</h3>
+            <p>Authentication system, location services, weather API integration, and basic UI framework setup with material design implementation.</p>
+          </div>
+        </div>
+        
+        <div class="roadmap-item">
+          <div class="roadmap-number">2</div>
+          <div class="roadmap-content">
+            <h3>Weather Intelligence Engine</h3>
+            <p>Advanced forecasting algorithms, multiple data source integration, and personalized weather insights with machine learning predictions.</p>
+          </div>
+        </div>
+        
+        <div class="roadmap-item">
+          <div class="roadmap-number">3</div>
+          <div class="roadmap-content">
+            <h3>Interactive Features</h3>
+            <p>Weather radar implementation, air quality monitoring, AR weather overlays, and advanced notification system with smart alerts.</p>
+          </div>
+        </div>
+        
+        <div class="roadmap-item">
+          <div class="roadmap-number">4</div>
+          <div class="roadmap-content">
+            <h3>Community Platform</h3>
+            <p>User-generated content system, weather photo sharing, community discussions, and social features with weather story creation.</p>
+          </div>
+        </div>
+        
+        <div class="roadmap-item">
+          <div class="roadmap-number">5</div>
+          <div class="roadmap-content">
+            <h3>Launch & Optimization</h3>
+            <p>Performance optimization, user testing, Play Store deployment, analytics integration, and continuous improvement based on user feedback.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Metrics -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">📊 Success Targets</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">500K+</span>
+          <span class="stat-label">Downloads Year 1</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">100K+</span>
+          <span class="stat-label">Monthly Active Users</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">4.8+</span>
+          <span class="stat-label">Play Store Rating</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">10K+</span>
+          <span class="stat-label">Community Posts/Month</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-content">
+        <h3 class="footer-title">⛅ SkyCast</h3>
+        <p style="color: #b8c6db; margin-bottom: 30px;">
+          Revolutionizing weather intelligence through community and technology
+        </p>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Support</a>
+          <a href="#">API Documentation</a>
+          <a href="#">Community Guidelines</a>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>⛅ SkyCast Weather Intelligence Platform | Developed by Piyush Patil © 2025 | All Rights Reserved</p>
+      </div>
+    </div>
   </footer>
 
+  <script>
+    // Create animated stars
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      for (let i = 0; i < 200; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 100) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Initialize stars
+    createStars();
+
+    // Add intersection observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe all feature cards and stat cards
+    document.querySelectorAll('.feature-card, .stat-card, .tech-item').forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      card.style.transition = 'all 0.6s ease';
+      observer.observe(card);
+    });
+
+    // Add hover sound effects (visual feedback)
+    document.querySelectorAll('.btn, .feature-card, .stat-card').forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        element.style.transform = element.style.transform.replace('scale(1)', '').trim() + ' scale(1.02)';
+      });
+      
+      element.addEventListener('mouseleave', () => {
+        element.style.transform = element.style.transform.replace('scale(1.02)', '').trim();
+      });
+    });
+  </script>
 </body>
 </html>
