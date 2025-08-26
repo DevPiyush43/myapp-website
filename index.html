@@ -533,7 +533,8 @@
     </p>
  <div class="cta-buttons">
   <!-- Direct APK Download -->
-  <a href="https://drive.google.com/uc?export=download&id=1gGS2sUg1GHSSaFsvpmeG2McjGZmCQ3Hi" 
+  <a id="downloadApp" 
+     href="https://drive.google.com/uc?export=download&id=1U_TUaw5QhIWWK9HZv7TgIffp8KzmOjrD" 
      class="btn btn-primary"
      download="SkyCast.apk"
      target="_blank"
@@ -547,7 +548,18 @@
   </a>
 </div>
 
-
+<script>
+  // Force save fallback for browsers that ignore 'download' attribute
+  document.getElementById("downloadApp").addEventListener("click", function(e) {
+    e.preventDefault(); 
+    const link = document.createElement("a");
+    link.href = "https://drive.google.com/uc?export=download&id=1U_TUaw5QhIWWK9HZv7TgIffp8KzmOjrD";
+    link.download = "SkyCast.apk";  // Force filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+</script>
 
 
 
