@@ -1,7 +1,7 @@
 # myapp-website
-# 🌤️ SkyCAst Weather App  
+# 🌤️ SkyCast Weather App  
 
-SkyCAst is a modern and lightweight **Weather Forecast App** that provides accurate real-time weather updates, 7-day forecasts, and community-based updates.  
+SkyCast is a modern and lightweight **Weather Forecast App** that provides accurate real-time weather updates, 7-day forecasts, and community-based updates.  
 It is designed with a clean UI, smooth animations, and offline support.  
 
 ---
@@ -27,10 +27,10 @@ It is designed with a clean UI, smooth animations, and offline support.
 ---
 
 ## 📥 Download  
-👉 [**Download SkyCAst APK**](https://drive.google.com/uc?export=download&id=1gGS2sUg1GHSSaFsvpmeG2McjGZmCQ3Hi)  
+👉 [**Download SkyCast APK**](https://drive.google.com/uc?export=download&id=1gGS2sUg1GHSSaFsvpmeG2McjGZmCQ3Hi)  
 
 Or visit the official website:  
-🌐 [SkyCAst Website](https://tinyurl.com/SkyCastApp)  
+🌐 [SkyCast Website](https://tinyurl.com/SkyCastApp)  
 
 ---
 
