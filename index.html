@@ -461,6 +461,84 @@
       66% { transform: translateY(30px) rotate(240deg); }
     }
 
+    .feedback-form {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #00d4ff;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      font-size: 1em;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #00d4ff;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #b8c6db;
+    }
+
+    .feedback-btn {
+      width: 100%;
+      margin-top: 20px;
+      font-size: 1.2em;
+      padding: 18px;
+      border-radius: 12px;
+    }
+
+    .feedback-status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+
+    .feedback-status.success {
+      background: rgba(76, 175, 80, 0.2);
+      border: 1px solid rgba(76, 175, 80, 0.5);
+      color: #4caf50;
+    }
+
+    .feedback-status.error {
+      background: rgba(244, 67, 54, 0.2);
+      border: 1px solid rgba(244, 67, 54, 0.5);
+      color: #f44336;
+    }
+
     @media (max-width: 768px) {
       .navbar {
         padding: 15px 20px;
@@ -497,6 +575,10 @@
         flex: 1;
         margin: 0;
       }
+      
+      .feedback-form {
+        padding: 30px 20px;
+      }
     }
   </style>
 </head>
@@ -531,7 +613,7 @@
       Experience the future of weather intelligence with AI-powered forecasting, 
       community-driven insights, and immersive weather visualization
     </p>
-<div class="cta-buttons" style="display: flex; gap: 15px; margin-top: 20px;">
+    <div class="cta-buttons" style="display: flex; gap: 15px; margin-top: 20px;">
   <!-- Download Button -->
   <a href="https://devpiyush43.github.io/myapp-website/downloads/SkyCast.apk" 
      class="btn btn-primary" download
@@ -546,23 +628,6 @@
     <span>🚀</span> Explore Features
   </a>
 </div>
-
-
-<script>
-  // Force save fallback for browsers that ignore 'download' attribute
-  document.getElementById("downloadApp").addEventListener("click", function(e) {
-    e.preventDefault(); 
-    const link = document.createElement("a");
-    link.href = "https://drive.google.com/uc?export=download&id=1U_TUaw5QhIWWK9HZv7TgIffp8KzmOjrD";
-    link.download = "SkyCast.apk";  // Force filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  });
-</script>
-
-
-
   </section>
 
   <!-- Features Section -->
@@ -733,6 +798,49 @@
     </div>
   </section>
 
+  <!-- Feedback Section -->
+  <section class="section" style="background: rgba(0, 0, 0, 0.3);">
+    <div class="container">
+      <h2 class="section-title">💬 Share Your Feedback</h2>
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div class="feedback-form">
+          <p style="text-align: center; color: #b8c6db; margin-bottom: 40px; font-size: 1.1em;">
+            Help us improve SkyCast! Your feedback is valuable to us and will be sent directly to our development team.
+          </p>
+          
+          <form id="feedbackForm">
+            <div class="form-group">
+              <label for="userName">Your Name *</label>
+              <input type="text" id="userName" name="userName" required placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group">
+              <label for="userFeedback">Your Feedback *</label>
+              <textarea id="userFeedback" name="userFeedback" required placeholder="Share your thoughts, suggestions, or report any issues..." rows="6"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="feedbackType">Feedback Type</label>
+              <select id="feedbackType" name="feedbackType">
+                <option value="general">General Feedback</option>
+                <option value="feature">Feature Request</option>
+                <option value="bug">Bug Report</option>
+                <option value="ui">UI/UX Improvement</option>
+                <option value="performance">Performance Issue</option>
+              </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary feedback-btn">
+              <span>📧</span> Send Feedback
+            </button>
+          </form>
+          
+          <div id="feedbackStatus" class="feedback-status"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="footer" id="contact">
     <div class="container">
@@ -796,6 +904,61 @@
 
     // Initialize stars
     createStars();
+
+    // Feedback form handling
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const userName = document.getElementById('userName').value;
+      const userFeedback = document.getElementById('userFeedback').value;
+      const feedbackType = document.getElementById('feedbackType').value;
+      const statusDiv = document.getElementById('feedbackStatus');
+      
+      if (!userName.trim() || !userFeedback.trim()) {
+        showFeedbackStatus('Please fill in all required fields.', 'error');
+        return;
+      }
+      
+      // Create email body
+      const emailBody = `Hello Piyush,
+
+New feedback received for SkyCast Weather App:
+
+Name: ${userName}
+Feedback Type: ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)}
+
+Feedback:
+${userFeedback}
+
+---
+Sent from SkyCast Website Feedback Form
+Date: ${new Date().toLocaleString()}`;
+
+      // Create mailto link
+      const emailSubject = `SkyCast Feedback - ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)} from ${userName}`;
+      const mailtoLink = `mailto:piyushpatil8104@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
+      
+      // Show success message
+      showFeedbackStatus('Thank you! Your email client should open now. Please send the email to complete your feedback submission.', 'success');
+      
+      // Reset form
+      document.getElementById('feedbackForm').reset();
+    });
+
+    function showFeedbackStatus(message, type) {
+      const statusDiv = document.getElementById('feedbackStatus');
+      statusDiv.textContent = message;
+      statusDiv.className = `feedback-status ${type}`;
+      statusDiv.style.display = 'block';
+      
+      // Hide after 8 seconds
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 8000);
+    }
 
     // Add intersection observer for animations
     const observerOptions = {
