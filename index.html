@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>⛅ SkyCast - Advanced Weather Intelligence</title>
@@ -902,97 +904,75 @@
       });
     });
 
-    // Initialize stars
-    createStars();
 
-    // Feedback form handling
-    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const userName = document.getElementById('userName').value;
-      const userFeedback = document.getElementById('userFeedback').value;
-      const feedbackType = document.getElementById('feedbackType').value;
-      const statusDiv = document.getElementById('feedbackStatus');
-      
-      if (!userName.trim() || !userFeedback.trim()) {
-        showFeedbackStatus('Please fill in all required fields.', 'error');
-        return;
-      }
-      
-      // Create email body
-      const emailBody = `Hello Piyush,
+  // Initialize EmailJS (add this after the script tag above)
+  (function() {
+    emailjs.init('AqzEd2OJmdcpQXiR-dj86'); // Replace with your EmailJS public key
+  })();
 
-New feedback received for SkyCast Weather App:
+  // Initialize stars
+  createStars();
 
-Name: ${userName}
-Feedback Type: ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)}
-
-Feedback:
-${userFeedback}
-
----
-Sent from SkyCast Website Feedback Form
-Date: ${new Date().toLocaleString()}`;
-
-      // Create mailto link
-      const emailSubject = `SkyCast Feedback - ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)} from ${userName}`;
-      const mailtoLink = `mailto:piyushpatil8104@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-      
-      // Open email client
-      window.location.href = mailtoLink;
-      
-      // Show success message
-      showFeedbackStatus('Thank you! Your email client should open now. Please send the email to complete your feedback submission.', 'success');
-      
-      // Reset form
-      document.getElementById('feedbackForm').reset();
-    });
-
-    function showFeedbackStatus(message, type) {
-      const statusDiv = document.getElementById('feedbackStatus');
-      statusDiv.textContent = message;
-      statusDiv.className = `feedback-status ${type}`;
-      statusDiv.style.display = 'block';
-      
-      // Hide after 8 seconds
-      setTimeout(() => {
-        statusDiv.style.display = 'none';
-      }, 8000);
+  // EmailJS Feedback form handling
+  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const userName = document.getElementById('userName').value;
+    const userFeedback = document.getElementById('userFeedback').value;
+    const feedbackType = document.getElementById('feedbackType').value;
+    const submitButton = document.querySelector('.feedback-btn');
+    const statusDiv = document.getElementById('feedbackStatus');
+    
+    // Validation
+    if (!userName.trim() || !userFeedback.trim()) {
+      showFeedbackStatus('Please fill in all required fields.', 'error');
+      return;
     }
-
-    // Add intersection observer for animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
+    
+    // Show loading state
+    submitButton.innerHTML = '<span>⏳</span> Sending...';
+    submitButton.disabled = true;
+    
+    // Prepare email parameters
+    const templateParams = {
+      from_name: userName,
+      feedback_type: feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1),
+      message: userFeedback,
+      to_email: 'piyushpatil8104@gmail.com',
+      reply_to: '', // Optional: if you want user's email
+      date: new Date().toLocaleString(),
+      subject: `SkyCast Feedback - ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)} from ${userName}`
     };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }
+    
+    // Send email using EmailJS
+    emailjs.send('service_42dafwh', 'template_knt7p5w', templateParams)
+      .then(function(response) {
+        console.log('SUCCESS!', response.status, response.text);
+        showFeedbackStatus('✅ Thank you! Your feedback has been sent successfully.', 'success');
+        document.getElementById('feedbackForm').reset();
+      })
+      .catch(function(error) {
+        console.log('FAILED...', error);
+        showFeedbackStatus('❌ Sorry, there was an error sending your feedback. Please try again.', 'error');
+      })
+      .finally(function() {
+        // Reset button state
+        submitButton.innerHTML = '<span>📧</span> Send Feedback';
+        submitButton.disabled = false;
       });
-    }, observerOptions);
+  });
 
-    // Observe all feature cards and stat cards
-    document.querySelectorAll('.feature-card, .stat-card, .tech-item').forEach(card => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(30px)';
-      card.style.transition = 'all 0.6s ease';
-      observer.observe(card);
-    });
-
-    // Add hover sound effects (visual feedback)
-    document.querySelectorAll('.btn, .feature-card, .stat-card').forEach(element => {
-      element.addEventListener('mouseenter', () => {
-        element.style.transform = element.style.transform.replace('scale(1)', '').trim() + ' scale(1.02)';
-      });
-      
-      element.addEventListener('mouseleave', () => {
-        element.style.transform = element.style.transform.replace('scale(1.02)', '').trim();
-      });
-    });
-  </script>
+  function showFeedbackStatus(message, type) {
+    const statusDiv = document.getElementById('feedbackStatus');
+    statusDiv.innerHTML = message;
+    statusDiv.className = `feedback-status ${type}`;
+    statusDiv.style.display = 'block';
+    
+    // Hide after 8 seconds
+    setTimeout(() => {
+      statusDiv.style.display = 'none';
+    }, 8000);
+  }
+</script>
 </body>
 </html>
