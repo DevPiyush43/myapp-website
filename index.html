@@ -905,17 +905,19 @@
     });
 
 
-  // Initialize EmailJS (add this after the script tag above)
-  (function() {
-    emailjs.init('m5paSzY3u09mAkraZ'); // Replace with your EmailJS public key
-  })();
+// Initialize EmailJS with your correct public key
+(function() {
+    emailjs.init('m5paSzY3u09mAkraZ'); // Your correct EmailJS public key
+    console.log('EmailJS initialized successfully');
+})();
 
-  // Initialize stars
-  createStars();
+// Initialize stars
+createStars();
 
-  // EmailJS Feedback form handling
-  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+// Enhanced EmailJS Feedback form handling
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    console.log('Form submission started');
     
     const userName = document.getElementById('userName').value;
     const userFeedback = document.getElementById('userFeedback').value;
@@ -923,46 +925,59 @@
     const submitButton = document.querySelector('.feedback-btn');
     const statusDiv = document.getElementById('feedbackStatus');
     
-    // Validation
+    // Enhanced validation
     if (!userName.trim() || !userFeedback.trim()) {
-      showFeedbackStatus('Please fill in all required fields.', 'error');
-      return;
+        showFeedbackStatus('Please fill in all required fields.', 'error');
+        return;
     }
     
     // Show loading state
     submitButton.innerHTML = '<span>⏳</span> Sending...';
     submitButton.disabled = true;
     
-    // Prepare email parameters
+    // Prepare email parameters (matching your template variables)
     const templateParams = {
-      from_name: userName,
-      feedback_type: feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1),
-      message: userFeedback,
-      to_email: 'piyushpatil8104@gmail.com',
-      reply_to: '', // Optional: if you want user's email
-      date: new Date().toLocaleString(),
-      subject: `SkyCast Feedback - ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)} from ${userName}`
+        user_name: userName,           // Changed from 'from_name'
+        user_feedback: userFeedback,   // Changed from 'message'
+        feedback_type: feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1),
+        submission_date: new Date().toLocaleString(),
+        user_email: 'Not provided'     // Since you don't collect email
     };
     
-    // Send email using EmailJS
-    emailjs.send('service_42dafwh', 'template_knt7p5w', templateParams)
-      .then(function(response) {
-        console.log('SUCCESS!', response.status, response.text);
-        showFeedbackStatus('✅ Thank you! Your feedback has been sent successfully.', 'success');
-        document.getElementById('feedbackForm').reset();
-      })
-      .catch(function(error) {
-        console.log('FAILED...', error);
-        showFeedbackStatus('❌ Sorry, there was an error sending your feedback. Please try again.', 'error');
-      })
-      .finally(function() {
-        // Reset button state
-        submitButton.innerHTML = '<span>📧</span> Send Feedback';
-        submitButton.disabled = false;
-      });
-  });
+    console.log('Sending email with params:', templateParams);
+    
+    // Send email using EmailJS - YOU NEED TO UPDATE THESE IDs
+    emailjs.send('service_42dafwh', 'template_hpfc5ye', templateParams)
+        .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            showFeedbackStatus('✅ Thank you! Your feedback has been sent successfully to our team.', 'success');
+            document.getElementById('feedbackForm').reset();
+        })
+        .catch(function(error) {
+            console.error('EmailJS Error:', error);
+            
+            // Better error handling
+            let errorMsg = '❌ Failed to send feedback. ';
+            if (error.status === 400) {
+                errorMsg += 'Invalid template or service configuration.';
+            } else if (error.status === 401) {
+                errorMsg += 'Authentication failed - check your public key.';
+            } else if (error.status === 404) {
+                errorMsg += 'Service or template not found.';
+            } else {
+                errorMsg += 'Please try again later.';
+            }
+            
+            showFeedbackStatus(errorMsg, 'error');
+        })
+        .finally(function() {
+            // Reset button state
+            submitButton.innerHTML = '<span>📧</span> Send Feedback';
+            submitButton.disabled = false;
+        });
+});
 
-  function showFeedbackStatus(message, type) {
+function showFeedbackStatus(message, type) {
     const statusDiv = document.getElementById('feedbackStatus');
     statusDiv.innerHTML = message;
     statusDiv.className = `feedback-status ${type}`;
@@ -970,9 +985,9 @@
     
     // Hide after 8 seconds
     setTimeout(() => {
-      statusDiv.style.display = 'none';
+        statusDiv.style.display = 'none';
     }, 8000);
-  }
+}
 </script>
 </body>
 </html>
